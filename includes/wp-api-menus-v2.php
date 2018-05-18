@@ -370,6 +370,20 @@ if ( ! class_exists( 'WP_REST_Menus' ) ) :
 
             $item = (array) $menu_item;
 
+            //categories, tags, etc ...
+            if($item['type'] === 'taxonomy')
+            {
+                $object_slug  = get_term($item['object_id'], $item['object'])->slug;
+            }
+            //archive
+            else if($item['type'] === 'post_type_archive'){
+                $object_slug = get_post_type_object( $item['object'] )->rewrite['slug'];
+            }
+            else{
+                // post_type, page, etc ...
+                $object_slug = get_post( $item['object_id'] )->post_name;
+            }
+
             $menu_item = array(
                 'id'          => abs( $item['ID'] ),
                 'order'       => (int) $item['menu_order'],
@@ -383,7 +397,7 @@ if ( ! class_exists( 'WP_REST_Menus' ) ) :
                 'description' => $item['description'],
                 'object_id'   => abs( $item['object_id'] ),
                 'object'      => $item['object'],
-                'object_slug' => get_post( $item['object_id'] )->post_name,
+                'object_slug' => $object_slug,
                 'type'        => $item['type'],
                 'type_label'  => $item['type_label'],
             );
